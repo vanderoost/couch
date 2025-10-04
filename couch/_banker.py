@@ -65,7 +65,7 @@ class Bank(ABC):
         ]
 
         if len(account_matches) == 0:
-            raise Exception(f"Account not found - Properties: {kwargs}")
+            raise Exception(f"No accounts found - Properties: {kwargs}")
 
         if len(account_matches) > 1:
             raise Exception(f"Multiple accounts found - Properties: {kwargs}")
@@ -474,10 +474,10 @@ def wise_response_to_transaction(response: dict) -> Transaction | None:
 def create_wise_bank_accounts(
     bank: Bank, profiles: list, balances: dict, accounts: dict
 ) -> list[BankAccount]:
-    map_balance_type_to_bank_account_type = {
-        "STANDARD": AccountType.CHECKING,
-        "SAVINGS": AccountType.SAVING,
-    }
+    map_balance_type_to_bank_account_type = dict(
+        STANDARD=AccountType.CHECKING,
+        SAVINGS=AccountType.SAVING,
+    )
 
     bank_accounts = []
 
@@ -511,7 +511,8 @@ def create_wise_bank_accounts(
                             balance.pop("type")
                         ],
                         profile_type=profile_type,
-                        name=balance.pop("name"),
+                        name=balance.pop("name")
+                        or bank_details.get("accountHolderName"),
                         context=dict(
                             profile=profile,
                             account=account,
