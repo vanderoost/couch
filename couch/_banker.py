@@ -495,7 +495,7 @@ def create_wise_bank_accounts(
 
                 balance_id = balance.pop("id")
                 balance |= balances_by_id.get(balance_id, {})
-                bank_details = balance.pop("bankDetails", {})
+                bank_details = balance.pop("bankDetails", {}) or {}
                 bank_accounts.append(
                     BankAccount(
                         id=balance_id,
@@ -614,9 +614,9 @@ class WiseInternalTransfer(TransferStrategy):
         same_profiles = source_profile_id == target_profile_id
         same_currencies = source.currency == target.currency
 
-        assert (
-            same_profiles or same_currencies
-        ), "Cannot convert currencies between different Wise profiles"
+        assert same_profiles or same_currencies, (
+            "Cannot convert currencies between different Wise profiles"
+        )
 
         source_recipient_id = source.context.get("account", {}).get("recipientId")
         if source_recipient_id is None:
